@@ -1,0 +1,13 @@
+{
+"type": "FeatureCollection",
+"name": "hotspots",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "cluster": 0, "latitude": 18.519884696202531, "longitude": 73.856966221518974, "report_count": 158, "average_urgency": 71.335443037974684, "total_people_affected": 2127, "severe_reports": 43, "high_reports": 60, "medium_reports": 47, "low_reports": 8, "priority_score": 78.388637517681616, "priority_level": "CRITICAL" }, "geometry": { "type": "Point", "coordinates": [ 73.856966221518974, 18.519884696202531 ] } },
+{ "type": "Feature", "properties": { "cluster": 4, "latitude": 18.4706844, "longitude": 73.81956888000001, "report_count": 25, "average_urgency": 77.04, "total_people_affected": 427, "severe_reports": 8, "high_reports": 12, "medium_reports": 5, "low_reports": 0, "priority_score": 50.756880733944953, "priority_level": "HIGH" }, "geometry": { "type": "Point", "coordinates": [ 73.81956888, 18.4706844 ] } },
+{ "type": "Feature", "properties": { "cluster": 3, "latitude": 18.565781982456141, "longitude": 73.911977736842104, "report_count": 57, "average_urgency": 68.192982456140356, "total_people_affected": 693, "severe_reports": 15, "high_reports": 20, "medium_reports": 15, "low_reports": 7, "priority_score": 29.651415709695627, "priority_level": "MEDIUM" }, "geometry": { "type": "Point", "coordinates": [ 73.911977736842104, 18.565781982456141 ] } },
+{ "type": "Feature", "properties": { "cluster": 1, "latitude": 18.5074141, "longitude": 73.80802579, "report_count": 100, "average_urgency": 64.42, "total_people_affected": 1141, "severe_reports": 23, "high_reports": 29, "medium_reports": 31, "low_reports": 17, "priority_score": 29.267170964430331, "priority_level": "MEDIUM" }, "geometry": { "type": "Point", "coordinates": [ 73.80802579, 18.5074141 ] } },
+{ "type": "Feature", "properties": { "cluster": 2, "latitude": 18.480072176470589, "longitude": 73.889513147058835, "report_count": 34, "average_urgency": 67.529411764705884, "total_people_affected": 383, "severe_reports": 7, "high_reports": 15, "medium_reports": 9, "low_reports": 3, "priority_score": 9.3432735407539464, "priority_level": "LOW" }, "geometry": { "type": "Point", "coordinates": [ 73.889513147058835, 18.480072176470589 ] } },
+{ "type": "Feature", "properties": { "cluster": 5, "latitude": 18.591620102564104, "longitude": 73.819044794871786, "report_count": 39, "average_urgency": 64.15384615384616, "total_people_affected": 453, "severe_reports": 8, "high_reports": 14, "medium_reports": 10, "low_reports": 7, "priority_score": 3.3093915982617093, "priority_level": "LOW" }, "geometry": { "type": "Point", "coordinates": [ 73.819044794871786, 18.591620102564104 ] } }
+]
+}
