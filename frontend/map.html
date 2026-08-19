@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Disaster Response GIS Dashboard</title>
+
+    <!-- Leaflet CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <style>
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+        }
+
+        header {
+            padding: 15px 25px;
+            background: #1f2937;
+            color: white;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        header p {
+            margin: 5px 0 0;
+            color: #d1d5db;
+        }
+
+        #stats {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            min-width: 120px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            margin: 0;
+        }
+
+        .critical {
+            border-left: 6px solid red;
+        }
+
+        .high {
+            border-left: 6px solid orange;
+        }
+
+        .medium {
+            border-left: 6px solid #eab308;
+        }
+
+        .low {
+            border-left: 6px solid green;
+        }
+
+        #map {
+            height: 650px;
+            width: 100%;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<header>
+
+    <h1>🚨 Disaster Response Dashboard</h1>
+
+    <p>
+        Real-Time Risk Prediction and GIS Hotspot Monitoring
+    </p>
+
+</header>
+
+
+<div id="stats">
+
+    <div class="card critical">
+        <h3 id="critical-count">0</h3>
+        <p>CRITICAL</p>
+    </div>
+
+    <div class="card high">
+        <h3 id="high-count">0</h3>
+        <p>HIGH</p>
+    </div>
+
+    <div class="card medium">
+        <h3 id="medium-count">0</h3>
+        <p>MEDIUM</p>
+    </div>
+
+    <div class="card low">
+        <h3 id="low-count">0</h3>
+        <p>LOW</p>
+    </div>
+
+</div>
+
+
+<div id="map"></div>
+
+
+<!-- Leaflet JS -->
+
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+
+<script>
+
+    // ----------------------------------------
+    // CREATE MAP
+    // ----------------------------------------
+
+    const map = L.map("map").setView(
+        [18.5204, 73.8567],
+        11
+    );
+
+
+    // ----------------------------------------
+    // OPENSTREETMAP BASE LAYER
+    // ----------------------------------------
+
+    L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+            maxZoom: 19,
+            attribution:
+                "&copy; OpenStreetMap contributors"
+        }
+    ).addTo(map);
+
+
+    // ----------------------------------------
+    // COLORS
+    // ----------------------------------------
+
+    function getColor(priority) {
+
+        if (priority === "CRITICAL") {
+            return "red";
+        }
+
+        if (priority === "HIGH") {
+            return "orange";
+        }
+
+        if (priority === "MEDIUM") {
+            return "#eab308";
+        }
+
+        return "green";
+    }
+
+
+    // ----------------------------------------
+    // LOAD RISK ZONES
+    // ----------------------------------------
+
+    fetch("http://127.0.0.1:8000/api/risk-zones")
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            console.log("Risk zones loaded:", data);
+
+            L.geoJSON(data, {
+
+                style: function(feature) {
+
+                    const priority =
+                        feature.properties.priority_level;
+
+                    return {
+
+                        color: getColor(priority),
+
+                        fillColor: getColor(priority),
+
+                        fillOpacity: 0.25,
+
+                        weight: 2
+
+                    };
+
+                },
+
+
+                onEachFeature: function(
+                    feature,
+                    layer
+                ) {
+
+                    const p =
+                        feature.properties;
+
+                    layer.bindPopup(`
+
+                        <h3>
+                            ${p.priority_level} HOTSPOT
+                        </h3>
+
+                        <hr>
+
+                        <b>Cluster:</b>
+                        ${p.cluster}
+
+                        <br><br>
+
+                        <b>Reports:</b>
+                        ${p.report_count}
+
+                        <br>
+
+                        <b>People affected:</b>
+                        ${p.total_people_affected}
+
+                        <br>
+
+                        <b>Severe reports:</b>
+                        ${p.severe_reports}
+
+                        <br>
+
+                        <b>High reports:</b>
+                        ${p.high_reports}
+
+                        <br>
+
+                        <b>Average urgency:</b>
+                        ${p.average_urgency.toFixed(2)}
+
+                        <br>
+
+                        <b>Priority score:</b>
+                        ${p.priority_score.toFixed(2)}
+
+                        <br>
+
+                        <b>Risk:</b>
+                        ${p.priority_level}
+
+                    `);
+
+                }
+
+            }).addTo(map);
+
+        })
+
+        .catch(error => {
+
+            console.error(
+                "Error loading risk zones:",
+                error
+            );
+
+        });
+
+
+    // ----------------------------------------
+    // LOAD HOTSPOTS
+    // ----------------------------------------
+
+    fetch("http://127.0.0.1:8000/api/hotspots")
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            console.log(
+                "Hotspots loaded:",
+                data
+            );
+
+
+            const counts = {
+
+                CRITICAL: 0,
+
+                HIGH: 0,
+
+                MEDIUM: 0,
+
+                LOW: 0
+
+            };
+
+
+            L.geoJSON(data, {
+
+                pointToLayer:
+                    function(feature, latlng) {
+
+                        const priority =
+                            feature.properties.priority_level;
+
+                        counts[priority]++;
+
+                        return L.circleMarker(
+                            latlng,
+                            {
+
+                                radius: 10,
+
+                                fillColor:
+                                    getColor(priority),
+
+                                color: "white",
+
+                                weight: 2,
+
+                                opacity: 1,
+
+                                fillOpacity: 0.9
+
+                            }
+                        );
+
+                    },
+
+
+                onEachFeature:
+                    function(feature, layer) {
+
+                        const p =
+                            feature.properties;
+
+                        layer.bindPopup(`
+
+                            <h3>
+                                🚨 ${p.priority_level}
+                            </h3>
+
+                            <b>Cluster:</b>
+                            ${p.cluster}
+
+                            <br>
+
+                            <b>Reports:</b>
+                            ${p.report_count}
+
+                            <br>
+
+                            <b>People affected:</b>
+                            ${p.total_people_affected}
+
+                            <br>
+
+                            <b>Priority:</b>
+                            ${p.priority_score.toFixed(2)}
+
+                        `);
+
+                    }
+
+            }).addTo(map);
+
+
+            // UPDATE DASHBOARD COUNTS
+
+            document.getElementById(
+                "critical-count"
+            ).innerText =
+                counts.CRITICAL;
+
+
+            document.getElementById(
+                "high-count"
+            ).innerText =
+                counts.HIGH;
+
+
+            document.getElementById(
+                "medium-count"
+            ).innerText =
+                counts.MEDIUM;
+
+
+            document.getElementById(
+                "low-count"
+            ).innerText =
+                counts.LOW;
+
+        })
+
+        .catch(error => {
+
+            console.error(
+                "Error loading hotspots:",
+                error
+            );
+
+        });
+
+</script>
+
+</body>
+</html>
