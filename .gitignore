@@ -216,8 +216,29 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+<<<<<<< HEAD
 data/raw/
 *.pt
 *.pth
 *.bin
 *.safetensors
+=======
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+venv/
+.venv/
+
+# SQLite database
+*.db
+
+# VS Code
+.vscode/
+
+# Environment variables
+.env
+>>>>>>> 8978246edf6ab032dc59dee750228561114f0331

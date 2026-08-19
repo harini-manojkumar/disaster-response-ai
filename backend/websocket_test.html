@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Disaster Response WebSocket Test</title>
+</head>
+
+<body>
+
+    <h1>Disaster Response WebSocket Test</h1>
+
+    <button onclick="sendMessage()">
+        Send Test Message
+    </button>
+
+    <h2>Status:</h2>
+    <div id="status">Connecting...</div>
+
+    <h2>Messages:</h2>
+    <div id="messages"></div>
+
+    <script>
+        const status = document.getElementById("status");
+        const messages = document.getElementById("messages");
+
+        console.log("Starting WebSocket connection...");
+
+        const socket = new WebSocket("ws://127.0.0.1:8000/ws");
+
+        socket.onopen = function () {
+            console.log("WebSocket CONNECTED");
+
+            status.innerHTML = "🟢 CONNECTED TO BACKEND";
+
+            messages.innerHTML +=
+                "<p>Connection successful!</p>";
+        };
+
+        socket.onmessage = function (event) {
+            console.log("Message received:", event.data);
+
+            messages.innerHTML +=
+                "<p>Backend: " + event.data + "</p>";
+        };
+
+        socket.onerror = function (error) {
+            console.error("WebSocket ERROR:", error);
+
+            status.innerHTML = "🔴 WEBSOCKET ERROR";
+
+            messages.innerHTML +=
+                "<p>WebSocket error occurred. Check browser console.</p>";
+        };
+
+        socket.onclose = function (event) {
+            console.log(
+                "WebSocket CLOSED",
+                "Code:", event.code,
+                "Reason:", event.reason
+            );
+
+            status.innerHTML = "🟠 CONNECTION CLOSED";
+
+            messages.innerHTML +=
+                "<p>Connection closed. Code: " +
+                event.code +
+                "</p>";
+        };
+
+        function sendMessage() {
+
+            console.log("Send button clicked");
+
+            if (socket.readyState === WebSocket.OPEN) {
+
+                socket.send("Hello from frontend");
+
+                messages.innerHTML +=
+                    "<p>Sent: Hello from frontend</p>";
+
+            } else {
+
+                messages.innerHTML +=
+                    "<p>❌ WebSocket is not connected.</p>";
+
+                console.log(
+                    "Socket readyState:",
+                    socket.readyState
+                );
+            }
+        }
+    </script>
+
+</body>
+</html>
